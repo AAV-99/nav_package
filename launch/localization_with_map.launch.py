@@ -15,7 +15,7 @@ def generate_launch_description():
         'warehouse.yaml'
     ])
     
-    # Argumentos con valores por defecto mejorados
+    # Argumentos con valores por defecto
     declare_world = DeclareLaunchArgument(
         'world', 
         default_value='warehouse',
@@ -47,14 +47,14 @@ def generate_launch_description():
         description='Habilitar localización')
     
     # Paths para turtlebot4
-    pkg_tb4_bringup = get_package_share_directory('turtlebot4_gz_bringup')
-    turtlebot4_gz_launch = PathJoinSubstitution([
-        pkg_tb4_bringup, 'launch', 'turtlebot4_gz.launch.py'
+    pkg_tb4_bringup = get_package_share_directory('turtlebot4_ignition_bringup')
+    turtlebot4_ignition_launch = PathJoinSubstitution([
+        pkg_tb4_bringup, 'launch', 'turtlebot4_ignition.launch.py'
     ])
     
     # Lanzar la simulación completa del TurtleBot4
     launch_sim = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([turtlebot4_gz_launch]),
+        PythonLaunchDescriptionSource([turtlebot4_ignition_launch]),
         launch_arguments={
             'rviz': LaunchConfiguration('rviz'),
             'slam': LaunchConfiguration('slam'),
