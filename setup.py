@@ -14,6 +14,16 @@ setup(
         ('share/' + package_name, ['package.xml']),
         # Incluir carpeta config completa
         (os.path.join('share', package_name, 'config'), glob('config/*.yaml')),
+        
+        #Incluir archivos launch
+        (os.path.join('share', package_name, 'launch'), 
+         glob('launch/*.launch.py')),
+        (os.path.join('share', package_name, 'launch'), 
+         glob('launch/*.py')),
+        
+        # Incluir mapas
+        (os.path.join('share', package_name, 'maps'), 
+         glob('maps/*.*')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
