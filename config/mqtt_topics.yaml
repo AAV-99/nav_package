@@ -1,0 +1,54 @@
+mqtt:
+  broker:
+    host: "192.168.1.100"   # IP del broker MQTT
+    port: 1883
+    username: "user"        # Opcional
+    password: "pass"        # Opcional
+
+  # ROS2 → MQTT (estado del robot hacia el dashboard/app)
+  ros_to_mqtt:
+    - topic: "/battery_state"
+      type: "sensor_msgs/msg/BatteryState"
+      mqtt_topic: "robot/status/battery"
+
+    - topic: "/amcl_pose"
+      type: "geometry_msgs/msg/PoseWithCovarianceStamped"
+      mqtt_topic: "robot/status/pose"
+
+    - topic: "/plan"
+      type: "nav_msgs/msg/Path"
+      mqtt_topic: "robot/status/trajectory"
+
+    - topic: "/orchestrator/mode"
+      type: "std_msgs/msg/String"
+      mqtt_topic: "robot/status/mode"
+
+    - topic: "/orchestrator/navigation_status"
+      type: "std_msgs/msg/String"
+      mqtt_topic: "robot/status/navigation"
+
+    - topic: "/goal_pose"
+      type: "geometry_msgs/msg/PoseStamped"
+      mqtt_topic: "robot/status/goal_pose"
+
+    - topic: "/odom"
+      type: "nav_msgs/msg/Odometry"
+      mqtt_topic: "robot/status/odom"
+
+  # MQTT → ROS2 (comandos enviados desde la app/dash al robot)
+  mqtt_to_ros:
+    - mqtt_topic: "robot/cmd_vel"
+      ros_topic: "/cmd_vel"
+      type: "geometry_msgs/msg/Twist"
+
+    - mqtt_topic: "robot/cmd_mode"
+      ros_topic: "/orchestrator/set_mode"
+      type: "std_msgs/msg/String"
+
+    - mqtt_topic: "robot/cmd_goal"
+      ros_topic: "/goal_pose"
+      type: "geometry_msgs/msg/PoseStamped"
+
+    - mqtt_topic: "robot/cancel_nav"
+      ros_topic: "/orchestrator/cancel_goal"
+      type: "std_msgs/msg/Bool"
