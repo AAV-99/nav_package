@@ -23,7 +23,7 @@ class Orchestrator(Node):
         self.current_goal = 1
         self.max_goals = 4
         self.retry_count = 0
-        self.max_retries = 3
+        self.max_retries = 25
 
         # Pub/Sub
         self.goal_pub = self.create_publisher(String, '/orchestrator/goal', 10)
@@ -100,7 +100,7 @@ class Orchestrator(Node):
         elif self.state == State.NAVIGATE:
             msg = String()
             msg.data = str(self.current_goal)
-            self.get_logger().info(f"📍 Enviando meta {msg.data}")
+            #self.get_logger().info(f"📍 Enviando meta {msg.data}")
             self.goal_pub.publish(msg)
             # quedamos en NAVIGATE hasta result_callback
 

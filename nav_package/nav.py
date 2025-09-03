@@ -7,6 +7,7 @@ from rclpy.duration import Duration
 from rclpy.node import Node
 from std_msgs.msg import String
 from ament_index_python.packages import get_package_share_directory
+from nav2_simple_commander.robot_navigator import TaskResult
 
 # Importar el wrapper de turtlebot4
 from turtlebot4_navigation.turtlebot4_navigator import TurtleBot4Directions, TurtleBot4Navigator
@@ -30,7 +31,8 @@ class NavToPosesNode(Node):
         yaml_path = os.path.join(pkg_path, 'config', 'locations.yaml')
         with open(yaml_path, 'r') as f:
             self.locations = yaml.safe_load(f)['locations']
-
+        
+        self.last_goal_id = None
         self.get_logger().info("✅ Nodo nav_to_poses listo y esperando metas...")
 
     def goal_callback(self, msg: String):
@@ -49,39 +51,35 @@ class NavToPosesNode(Node):
             TurtleBot4Directions.EAST
         )
 
-        self.get_logger().info(f"📍 Nueva meta recibida: {goal_id} -> {loc['x']}, {loc['y']}")
+        if goal_id != self.last_goal_id:
+            loc = self.locations[goal_id]
+            self.get_logger().info(f"📍 Nueva meta recibida: {goal_id} -> {loc['x']}, {loc['y']}")
+            self.last_goal_id = goal_id
 
         # Enviar al robot hacia la meta
         self.navigator.goToPose(goal_pose)
 
-        i = 0
-        while not self.navigator.isTaskComplete():
-            feedback = self.navigator.getFeedback()
-            if feedback and i % 5 == 0:
-                eta = Duration.from_msg(feedback.estimated_time_remaining).nanoseconds / 1e9
-                self.get_logger().info(f"⏳ ETA: {eta:.0f} segundos")
-            i += 1
+        # Esperar hasta que termine la navegación
+        if self.navigator.isTaskComplete():
+            # Revisar el resultado
+            result = str(self.navigator.getResult())
+            self.get_logger().info(result)
+            status_msg = String()
 
-        # Revisar el resultado
-        result = self.navigator.getResult()
-        status_msg = String()
+            if "SUCCEEDED" in result:
+                status_msg.data = "SUCCEEDED"
+                self.get_logger().info("✅ Meta alcanzada.")
+                self.status_pub.publish(status_msg)
+            elif "CANCELED" in result:
+                status_msg.data = "CANCELED"
+                self.get_logger().warn("⚠️ Meta cancelada.")
+                self.status_pub.publish(status_msg)
+            elif "FAILED" in result:
+                status_msg.data = "FAILED"
+                self.get_logger().error("❌ Meta fallida.")
+                self.status_pub.publish(status_msg)
 
-        if result == self.navigator.TaskResult.SUCCEEDED:
-            status_msg.data = "SUCCEEDED"
-            self.get_logger().info("✅ Meta alcanzada.")
-        elif result == self.navigator.TaskResult.CANCELED:
-            status_msg.data = "CANCELED"
-            self.get_logger().warn("⚠️ Meta cancelada.")
-        elif result == self.navigator.TaskResult.FAILED:
-            status_msg.data = "FAILED"
-            self.get_logger().error("❌ Meta fallida.")
-        else:
-            status_msg.data = "UNKNOWN"
-            self.get_logger().warn("⚠️ Estado desconocido.")
-
-        # Publicar estado
-        self.status_pub.publish(status_msg)
-
+        
 
 def main():
     rclpy.init()

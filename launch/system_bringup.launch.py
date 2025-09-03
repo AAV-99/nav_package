@@ -5,7 +5,7 @@ def generate_launch_description():
     return LaunchDescription([
         Node(
             package="nav_package",
-            executable="orchestrator_node",
+            executable="orchestrator",
             name="orchestrator",
             output="screen"
         ),
@@ -17,9 +17,8 @@ def generate_launch_description():
         ),
         Node(
             package="nav_package",
-            executable="mqtt_bridge",
-            name="mqtt_bridge",
-            output="screen",
-            parameters=["config/mqtt_topics.yaml"]
+            executable="nav",
+            name="nav",
+            output="screen"
         )
     ])
