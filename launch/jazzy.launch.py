@@ -15,6 +15,12 @@ def generate_launch_description():
         'maps',
         'warehouse.yaml'
     ])
+    # Ruta relativa por defecto para nav2_params.yaml
+    default_nav2_params = PathJoinSubstitution([
+        FindPackageShare(package_name),
+        'config',
+        'nav2.yaml'
+    ])
     
     # Argumentos con valores por defecto
     declare_world = DeclareLaunchArgument(
@@ -47,6 +53,12 @@ def generate_launch_description():
         default_value='true',
         description='Habilitar localización')
     
+    declare_nav2_params = DeclareLaunchArgument(
+    'params_file',
+    default_value=default_nav2_params,
+    description='Archivo de parámetros de Nav2'
+)
+    
     # Paths para turtlebot4
     pkg_tb4_bringup = get_package_share_directory('turtlebot4_gz_bringup')
     turtlebot4_gz_launch = PathJoinSubstitution([
@@ -63,6 +75,7 @@ def generate_launch_description():
             'localization': LaunchConfiguration('localization'),
             'map': LaunchConfiguration('map'),
             'world': LaunchConfiguration('world'),
+            'params_file': LaunchConfiguration('params_file'),
         }.items()
     )
     
@@ -81,6 +94,7 @@ def generate_launch_description():
         declare_slam,
         declare_nav2,
         declare_localization,
+        declare_nav2_params,
         
         # Lanzar la simulación
         launch_sim
