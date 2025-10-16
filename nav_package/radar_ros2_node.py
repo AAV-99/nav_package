@@ -5,6 +5,11 @@ from sensor_msgs.msg import PointCloud2, PointField
 from std_msgs.msg import Header
 import struct
 import numpy as np
+import sys
+import os
+
+# Agregar el path del paquete
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from rd03d_jetson import RD03D, Target
 
@@ -14,7 +19,7 @@ class RadarNode(Node):
         super().__init__('rd03d_radar_node')
         
         # Declare parameters
-        self.declare_parameter('uart_port', '/dev/ttyTHS0')
+        self.declare_parameter('uart_port', '/dev/ttyTHS1')
         self.declare_parameter('baudrate', 256000)
         self.declare_parameter('multi_mode', True)
         self.declare_parameter('publish_rate', 20.0)  # Hz
