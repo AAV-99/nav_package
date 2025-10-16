@@ -40,6 +40,7 @@ setup(
             'docking_node = nav_package.docking_node:main',
             'orchestrator = nav_package.orchestrator:main',
             'nav = nav_package.nav:main',
+            'radar_ros2_node = nav_package.radar_ros2_node:main',
 
         ],
     },
