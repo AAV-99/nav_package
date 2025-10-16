@@ -15,6 +15,7 @@ def generate_launch_description():
         'maps',
         'warehouse.yaml'
     ])
+
     # Ruta relativa por defecto para nav2_params.yaml
     default_nav2_params = PathJoinSubstitution([
         FindPackageShare(package_name),
@@ -88,13 +89,13 @@ def generate_launch_description():
         SetEnvironmentVariable('GZ_SIM_RENDER_ENGINE', 'ogre2'),
         
         # Declarar todos los argumentos
+        declare_nav2_params,
         declare_world,
         declare_map,
         declare_rviz,
         declare_slam,
         declare_nav2,
         declare_localization,
-        declare_nav2_params,
         
         # Lanzar la simulación
         launch_sim
